@@ -250,7 +250,6 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="current_cycle_average_daily_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda account: _number(
             _dig(account.usage, "current_cycle_averages", "pos_kwh")
         ),
@@ -260,7 +259,6 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="current_cycle_average_daily_cost",
         device_class=SensorDeviceClass.MONETARY,
         native_unit_of_measurement="USD",
-        state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda account: _number(
             _dig(account.usage, "current_cycle_averages", "pos_wh_est_cost")
         ),
@@ -270,7 +268,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="latest_cycle_day_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _latest_cycle_day_value(account, "pos_kwh"),
         attribute_fn=_latest_cycle_day_attributes,
     ),
@@ -279,7 +277,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="latest_cycle_day_estimated_cost",
         device_class=SensorDeviceClass.MONETARY,
         native_unit_of_measurement="USD",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _latest_cycle_day_value(
             account, "pos_wh_est_cost"
         ),
@@ -299,7 +297,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="previous_year_cycle_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _number(
             _dig(account.usage, "previous_year_cycle_totals", "pos_kwh")
         ),
@@ -326,7 +324,6 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="latest_usage_delta",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda account: _number(
             _dig(account.inferred_usage, "latest_usage_delta_kwh")
         ),
@@ -336,7 +333,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="last_24h_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _number(
             _dig(account.hourly_usage, "interval_a_totals", "pos_kwh")
         ),
@@ -347,7 +344,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="last_24h_estimated_cost",
         device_class=SensorDeviceClass.MONETARY,
         native_unit_of_measurement="USD",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _number(
             _dig(account.hourly_usage, "interval_a_totals", "pos_wh_est_cost")
         ),
@@ -367,7 +364,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="last_24h_previous_year_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _number(
             _dig(account.hourly_usage, "interval_b_totals", "pos_kwh")
         ),
@@ -388,7 +385,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="rolling_30d_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _number(
             _dig(account.daily_usage, "interval_a_totals", "pos_kwh")
         ),
@@ -399,7 +396,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="rolling_30d_estimated_cost",
         device_class=SensorDeviceClass.MONETARY,
         native_unit_of_measurement="USD",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _number(
             _dig(account.daily_usage, "interval_a_totals", "pos_wh_est_cost")
         ),
@@ -410,7 +407,6 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="rolling_30d_average_daily_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda account: _number(
             _dig(account.daily_usage, "interval_a_averages", "pos_kwh")
         ),
@@ -421,7 +417,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="rolling_12mo_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _number(
             _dig(account.monthly_usage, "interval_a_totals", "pos_kwh")
         ),
@@ -432,7 +428,7 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="rolling_12mo_estimated_cost",
         device_class=SensorDeviceClass.MONETARY,
         native_unit_of_measurement="USD",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL,
         value_fn=lambda account: _number(
             _dig(account.monthly_usage, "interval_a_totals", "pos_wh_est_cost")
         ),
@@ -443,7 +439,6 @@ SENSOR_DESCRIPTIONS: tuple[MyEPBSensorEntityDescription, ...] = (
         translation_key="rolling_12mo_average_monthly_kwh",
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda account: _number(
             _dig(account.monthly_usage, "interval_a_averages", "pos_kwh")
         ),
