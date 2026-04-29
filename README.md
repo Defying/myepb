@@ -100,6 +100,17 @@ Assistant:
 MYEPB_USERNAME='you@example.com' MYEPB_PASSWORD='...' python3 scripts/probe_myepb.py
 ```
 
+For local development, keep credentials in an ignored `.env.local` file:
+
+```bash
+cp .env.example .env.local
+$EDITOR .env.local
+set -a
+source .env.local
+set +a
+python3 scripts/probe_myepb.py
+```
+
 The probe prints linked power account numbers redacted to the last four
 characters plus the top-level keys returned by the usage endpoint.
 
