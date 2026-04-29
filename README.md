@@ -1,5 +1,7 @@
 # MyEPB Home Assistant custom integration
 
+[![Open your Home Assistant instance and open this repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Defying&repository=myepb&category=integration)
+
 This repository contains an experimental Home Assistant custom integration for
 EPB Chattanooga's MyEPB account data.
 
@@ -49,7 +51,27 @@ divides the kWh increase by the hours since the previous observed increase.
 That inferred entity stays unavailable until at least one increase has been
 observed after Home Assistant starts.
 
-## Install
+## Install With HACS
+
+This integration is not in the default HACS catalog yet. Add it as a custom
+repository:
+
+1. Open HACS.
+2. Select the three-dot menu.
+3. Select **Custom repositories**.
+4. Add `https://github.com/Defying/myepb`.
+5. Select **Integration** as the category.
+6. Download **MyEPB**.
+7. Restart Home Assistant.
+8. Go to **Settings > Devices & services > Add integration**.
+9. Search for **MyEPB**.
+10. Enter the same MyEPB username and password you use on `epb.com` or in the
+    MyEPB app, or leave both fields blank to add public outage-map sensors only.
+
+You can also open the repository in HACS with the badge at the top of this
+README.
+
+## Manual Install
 
 1. Copy `custom_components/myepb` into your Home Assistant
    `config/custom_components/` directory.

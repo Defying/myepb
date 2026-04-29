@@ -1,0 +1,49 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hacs:
+    name: HACS
+    runs-on: ubuntu-latest
+    steps:
+      - name: HACS validation
+        uses: hacs/action@main
+        with:
+          category: integration
+
+  hassfest:
+    name: Hassfest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Hassfest validation
+        uses: home-assistant/actions/hassfest@master
+
+  static:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile Python files
+        run: python -m py_compile custom_components/myepb/*.py scripts/*.py
+      - name: Validate JSON files
+        run: |
+          python -m json.tool hacs.json >/dev/null
+          python -m json.tool custom_components/myepb/manifest.json >/dev/null
+          python -m json.tool custom_components/myepb/strings.json >/dev/null
+          python -m json.tool custom_components/myepb/translations/en.json >/dev/null

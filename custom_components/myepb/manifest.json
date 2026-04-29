@@ -1,11 +1,14 @@
 {
   "domain": "myepb",
   "name": "MyEPB",
-  "codeowners": [],
+  "codeowners": [
+    "@Defying"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/Defying/myepb",
+  "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/Defying/myepb/issues",
   "requirements": [],
-  "version": "0.2.1"
+  "version": "0.2.2"
 }
