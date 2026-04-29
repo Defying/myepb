@@ -13,6 +13,4 @@ CONF_REFRESH_TOKEN_EXPIRES_ON = "refresh_token_expires_on"
 DEFAULT_API_BASE_URL = "https://api.epb.com"
 DEFAULT_SCAN_INTERVAL = timedelta(minutes=15)
 
-ATTR_ACCOUNT_NUMBER = "account_number"
 ATTR_REFERENCE_ID = "reference_id"
-ATTR_SERVICE_ADDRESS = "service_address"

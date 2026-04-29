@@ -7,13 +7,18 @@ from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 import json
 import os
+from pathlib import Path
 import re
+import shlex
 import sys
 from typing import Any
 import urllib.error
 import urllib.request
 
 API_BASE_URL = "https://api.epb.com"
+LOCAL_ENV_FILE = Path(".env.local")
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 SENSITIVE_KEYS = {
     "access",
@@ -153,7 +158,8 @@ def redact_path(path: str) -> str:
 
 
 def redact_error(details: str) -> str:
-    redacted = re.sub(r"\d{5,}", "redacted", details)
+    redacted = EMAIL_RE.sub("redacted", details)
+    redacted = re.sub(r"\d{5,}", "redacted", redacted)
     redacted = re.sub(
         r'"reference_id"\s*:\s*"[^"]+"',
         '"reference_id":"redacted"',
@@ -242,12 +248,34 @@ def account_body_from_location(location: dict[str, Any]) -> dict[str, str]:
 
 
 def required_env(names: Iterable[str]) -> dict[str, str]:
+    load_local_env()
     values = {name: os.environ.get(name, "") for name in names}
     missing = [name for name, value in values.items() if not value]
     if missing:
         print(f"Set {', '.join(missing)}.", file=sys.stderr)
         raise SystemExit(2)
     return values
+
+
+def load_local_env() -> None:
+    """Load simple KEY=VALUE pairs without executing shell code."""
+
+    if not LOCAL_ENV_FILE.exists():
+        return
+
+    for line in LOCAL_ENV_FILE.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if not ENV_KEY_RE.fullmatch(key) or key in os.environ:
+            continue
+        try:
+            parsed = shlex.split(value, comments=False, posix=True)
+        except ValueError:
+            parsed = [value.strip()]
+        os.environ[key] = parsed[0] if len(parsed) == 1 else value.strip()
 
 
 def main() -> int:

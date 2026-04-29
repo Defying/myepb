@@ -27,7 +27,6 @@ class MyEPBPowerAccount:
     gis_id: str
     zone_id: str
     location_label: str
-    service_address: str
     location: dict[str, Any]
     account: dict[str, Any]
     usage: dict[str, Any]
@@ -126,7 +125,6 @@ class MyEPBCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     gis_id=gis_id,
                     zone_id=zone_id,
                     location_label=location.get("location_label") or "",
-                    service_address=_format_service_address(premise),
                     location=location,
                     account=account,
                     usage=usage,
@@ -280,16 +278,6 @@ class MyEPBCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         for account_number in set(self._usage_samples) - account_numbers:
             self._usage_samples.pop(account_number, None)
             self._latest_inferred_usage.pop(account_number, None)
-
-
-def _format_service_address(premise: dict[str, Any]) -> str:
-    parts = [
-        premise.get("full_service_address"),
-        premise.get("city"),
-        premise.get("state"),
-        premise.get("zip_code"),
-    ]
-    return " ".join(str(part).strip() for part in parts if part)
 
 
 def _dig(data: Any, *path: str) -> Any:

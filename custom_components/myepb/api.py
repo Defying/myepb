@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
+import re
 from typing import Any
 
 from aiohttp import ClientError, ClientResponse, ClientSession
@@ -25,6 +26,10 @@ AUTH_ERROR_CODES = {
     "REFRESH_DENIED",
     "REFRESH_EXPIRED",
 }
+
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+LONG_NUMBER_RE = re.compile(r"\b\d{5,}\b")
+REDACTED_TEXT = "redacted"
 
 
 class MyEPBError(Exception):
@@ -246,7 +251,9 @@ class MyEPBClient:
                 json=json,
             )
         except ClientError as err:
-            raise MyEPBApiError(f"Error connecting to MyEPB: {err}") from err
+            raise MyEPBApiError(
+                f"Error connecting to MyEPB: {_redact_sensitive_text(str(err))}"
+            ) from err
 
         if response.ok:
             return await self._read_response(response)
@@ -289,7 +296,7 @@ class MyEPBClient:
         reference_id = response.headers.get("x-reference-id")
         message = payload.get("message") or response.reason or "MyEPB API error"
         return MyEPBApiError(
-            message,
+            _redact_sensitive_text(str(message)),
             status=response.status,
             error_code=error_code,
             reference_id=reference_id,
@@ -353,3 +360,8 @@ class MyEPBClient:
         if expires.tzinfo is None:
             expires = dt_util.as_utc(expires)
         return (expires - dt_util.utcnow()).total_seconds() > 60
+
+
+def _redact_sensitive_text(text: str) -> str:
+    text = EMAIL_RE.sub(REDACTED_TEXT, text)
+    return LONG_NUMBER_RE.sub(REDACTED_TEXT, text)

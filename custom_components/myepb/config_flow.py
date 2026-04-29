@@ -2,17 +2,29 @@
 
 from __future__ import annotations
 
+import hashlib
 from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.selector import (
+    TextSelector,
+    TextSelectorConfig,
+    TextSelectorType,
+)
 
 from .api import MyEPBAuthError, MyEPBClient, MyEPBError
 from .const import CONF_PUBLIC_OUTAGES_ONLY, DEFAULT_API_BASE_URL, DOMAIN
 
 PUBLIC_OUTAGES_UNIQUE_ID = f"{DOMAIN}_public_outages"
+USERNAME_SELECTOR = TextSelector(
+    TextSelectorConfig(type=TextSelectorType.TEXT, autocomplete="username")
+)
+PASSWORD_SELECTOR = TextSelector(
+    TextSelectorConfig(type=TextSelectorType.PASSWORD, autocomplete="current-password")
+)
 
 
 class MyEPBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -37,10 +49,7 @@ class MyEPBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_configured()
                 return self.async_create_entry(
                     title="EPB Public Outages",
-                    data={
-                        CONF_PUBLIC_OUTAGES_ONLY: True,
-                        "base_url": DEFAULT_API_BASE_URL,
-                    },
+                    data={CONF_PUBLIC_OUTAGES_ONLY: True},
                 )
 
             if not username or not password:
@@ -51,9 +60,9 @@ class MyEPBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {CONF_USERNAME: username, CONF_PASSWORD: password}
             )
             if isinstance(result, dict):
-                await self.async_set_unique_id(username.lower())
+                await self.async_set_unique_id(_username_unique_id(username))
                 self._abort_if_unique_id_configured()
-                return self.async_create_entry(title=username, data=result)
+                return self.async_create_entry(title="MyEPB", data=result)
             errors["base"] = result
 
         return self._show_user_form(errors)
@@ -65,8 +74,8 @@ class MyEPBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(CONF_USERNAME): str,
-                    vol.Optional(CONF_PASSWORD): str,
+                    vol.Optional(CONF_USERNAME): USERNAME_SELECTOR,
+                    vol.Optional(CONF_PASSWORD): PASSWORD_SELECTOR,
                 }
             ),
             errors=errors,
@@ -107,7 +116,7 @@ class MyEPBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=vol.Schema({vol.Required(CONF_PASSWORD): str}),
+            data_schema=vol.Schema({vol.Required(CONF_PASSWORD): PASSWORD_SELECTOR}),
             errors=errors,
         )
 
@@ -131,6 +140,10 @@ class MyEPBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return {
             CONF_USERNAME: user_input[CONF_USERNAME],
             CONF_PUBLIC_OUTAGES_ONLY: False,
-            "base_url": DEFAULT_API_BASE_URL,
             **client.tokens,
         }
+
+
+def _username_unique_id(username: str) -> str:
+    normalized = username.strip().lower().encode()
+    return f"{DOMAIN}_{hashlib.sha256(normalized).hexdigest()[:16]}"

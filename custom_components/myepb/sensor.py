@@ -21,7 +21,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.typing import StateType
 from homeassistant.util import dt as dt_util
 
-from .const import ATTR_ACCOUNT_NUMBER, ATTR_SERVICE_ADDRESS, DOMAIN
+from .const import DOMAIN
 from .coordinator import MyEPBCoordinator, MyEPBPowerAccount
 
 
@@ -597,12 +597,11 @@ class MyEPBSensor(CoordinatorEntity[MyEPBCoordinator], SensorEntity):
         """Return device information for the EPB account."""
 
         account = self._account
-        account_name = account.location_label if account else self._account_number
         return DeviceInfo(
             identifiers={(DOMAIN, self._account_number)},
             manufacturer="EPB",
             model="Energy account",
-            name=f"EPB {account_name or self._account_number}",
+            name="EPB Energy Account",
         )
 
     @property
@@ -614,10 +613,6 @@ class MyEPBSensor(CoordinatorEntity[MyEPBCoordinator], SensorEntity):
             return {}
 
         attributes = {
-            ATTR_ACCOUNT_NUMBER: account.account_number,
-            ATTR_SERVICE_ADDRESS: account.service_address,
-            "gis_id": account.gis_id,
-            "zone_id": account.zone_id,
             "current_cycle_label": _dig(account.usage, "current_cycle_label"),
             "percent_difference_label": _dig(
                 account.usage, "percent_difference_label"

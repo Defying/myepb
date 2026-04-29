@@ -98,6 +98,18 @@ tokens rather than storing your password in the config entry.
 
 The outage endpoints are public and do not require `X-User-Token`.
 
+## Privacy Notes
+
+- Home Assistant stores MyEPB access and refresh tokens in the config entry.
+  The integration does not store your MyEPB password after setup.
+- Diagnostics redact tokens, username, account numbers, addresses, GIS IDs,
+  premise IDs, phone/email/name fields, and ZIP/unit/location labels.
+- Sensor state attributes intentionally avoid account numbers, service
+  addresses, GIS IDs, and zone IDs. Those identifiers are only used internally
+  to associate Home Assistant entities with the EPB account.
+- The Home Assistant integration ignores config-entry API host overrides and
+  sends authenticated requests only to `https://api.epb.com`.
+
 ## Standalone Probe
 
 You can validate credentials and inspect the redacted API shape outside Home
@@ -111,22 +123,19 @@ For local development, keep credentials in an ignored `.env.local` file:
 
 ```bash
 cp .env.example .env.local
+chmod 600 .env.local
 $EDITOR .env.local
-set -a
-source .env.local
-set +a
 python3 scripts/probe_myepb.py
 ```
 
-The probe prints linked power account numbers redacted to the last four
-characters plus the top-level keys returned by the usage endpoint.
+The probe reads `.env.local` itself as plain `KEY=VALUE` text. It does not
+`source` the file, so a credentials file cannot execute shell commands. The
+probe prints the linked power account count plus top-level keys returned by the
+usage endpoint.
 
 For deeper endpoint discovery, run:
 
 ```bash
-set -a
-source .env.local
-set +a
 python3 scripts/probe_myepb_deep.py
 ```
 

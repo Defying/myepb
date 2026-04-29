@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
+from typing import Any
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant
@@ -24,6 +27,8 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up MyEPB from a config entry."""
+
+    _harden_entry_identity(hass, entry)
 
     async def _async_token_update(tokens: dict[str, str | None]) -> None:
         hass.config_entries.async_update_entry(
@@ -48,7 +53,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         access_token_expires_on=entry.data.get(CONF_ACCESS_TOKEN_EXPIRES_ON),
         refresh_token=entry.data.get(CONF_REFRESH_TOKEN),
         refresh_token_expires_on=entry.data.get(CONF_REFRESH_TOKEN_EXPIRES_ON),
-        base_url=entry.data.get("base_url", DEFAULT_API_BASE_URL),
+        base_url=DEFAULT_API_BASE_URL,
         token_update_callback=_async_token_update,
     )
     coordinator = MyEPBCoordinator(
@@ -73,3 +78,26 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+
+def _harden_entry_identity(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    updates: dict[str, Any] = {}
+    if "base_url" in entry.data:
+        new_data = dict(entry.data)
+        new_data.pop("base_url", None)
+        updates["data"] = new_data
+
+    username = entry.data.get(CONF_USERNAME)
+    if username:
+        if entry.unique_id in {None, username, username.lower()}:
+            updates["unique_id"] = _username_unique_id(username)
+        if entry.title == username:
+            updates["title"] = "MyEPB"
+
+    if updates:
+        hass.config_entries.async_update_entry(entry, **updates)
+
+
+def _username_unique_id(username: str) -> str:
+    normalized = username.strip().lower().encode()
+    return f"{DOMAIN}_{hashlib.sha256(normalized).hexdigest()[:16]}"
