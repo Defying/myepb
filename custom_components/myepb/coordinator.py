@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from datetime import datetime
 import logging
@@ -31,6 +32,9 @@ class MyEPBPowerAccount:
     account: dict[str, Any]
     usage: dict[str, Any]
     inferred_usage: dict[str, Any]
+    hourly_usage: dict[str, Any] | None
+    daily_usage: dict[str, Any] | None
+    monthly_usage: dict[str, Any] | None
     bill_summary: dict[str, Any] | None
     prepay_summary: dict[str, Any] | None
 
@@ -104,6 +108,11 @@ class MyEPBCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     account_number, gis_id, zone_id
                 )
                 inferred_usage = self._infer_usage(account_number, usage, sample_time)
+                hourly_usage, daily_usage, monthly_usage = (
+                    await self._async_get_comparison_usage(
+                        account_number, gis_id, zone_id
+                    )
+                )
                 account = accounts_by_number.get(account_number, {})
                 bill_summary = await self._async_get_bill_summary(account_number)
                 prepay_summary = None
@@ -122,6 +131,9 @@ class MyEPBCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     account=account,
                     usage=usage,
                     inferred_usage=inferred_usage,
+                    hourly_usage=hourly_usage,
+                    daily_usage=daily_usage,
+                    monthly_usage=monthly_usage,
                     bill_summary=bill_summary,
                     prepay_summary=prepay_summary,
                 )
@@ -164,6 +176,55 @@ class MyEPBCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return await self.client.async_get_power_prepay_summary(account_number)
         except MyEPBError:
             return None
+
+    async def _async_get_comparison_usage(
+        self,
+        account_number: str,
+        gis_id: str,
+        zone_id: str,
+    ) -> tuple[dict[str, Any] | None, dict[str, Any] | None, dict[str, Any] | None]:
+        today = dt_util.now().date()
+        calls = (
+            self.client.async_compare_power_usage(
+                "hourly",
+                account_number,
+                gis_id,
+                zone_id,
+                year=today.year,
+                month=today.month,
+                day=today.day,
+            ),
+            self.client.async_compare_power_usage(
+                "daily",
+                account_number,
+                gis_id,
+                zone_id,
+                year=today.year,
+                month=today.month,
+            ),
+            self.client.async_compare_power_usage(
+                "monthly",
+                account_number,
+                gis_id,
+                zone_id,
+                year=today.year,
+            ),
+        )
+        results = await asyncio.gather(*calls, return_exceptions=True)
+        comparisons: list[dict[str, Any] | None] = []
+        for result in results:
+            if isinstance(result, MyEPBAuthError):
+                raise result
+            if isinstance(result, MyEPBError):
+                LOGGER.debug("MyEPB comparison usage request failed: %s", result)
+                comparisons.append(None)
+                continue
+            if isinstance(result, Exception):
+                LOGGER.debug("Unexpected MyEPB comparison usage error: %s", result)
+                comparisons.append(None)
+                continue
+            comparisons.append(result)
+        return comparisons[0], comparisons[1], comparisons[2]
 
     async def _async_get_public_outages(self) -> dict[str, dict[str, Any]]:
         return {

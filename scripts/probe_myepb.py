@@ -76,8 +76,7 @@ def main() -> int:
             body=body,
         )
         print(
-            f"{redact(account_number)} {location.get('location_label', '')}: "
-            f"usage keys={sorted(usage.keys())}"
+            f"{redact(account_number)}: usage keys={sorted(usage.keys())}"
         )
 
     return 0

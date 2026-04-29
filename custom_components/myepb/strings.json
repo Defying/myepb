@@ -32,6 +32,21 @@
       "amount_due": {
         "name": "Amount due"
       },
+      "bill_cycle_consumption_kwh": {
+        "name": "Bill cycle consumption"
+      },
+      "current_bill_charges": {
+        "name": "Current bill charges"
+      },
+      "current_bill_total": {
+        "name": "Current bill total"
+      },
+      "current_cycle_average_daily_cost": {
+        "name": "Current cycle average daily cost"
+      },
+      "current_cycle_average_daily_kwh": {
+        "name": "Current cycle average daily energy"
+      },
       "current_cycle_estimated_cost": {
         "name": "Current cycle estimated cost"
       },
@@ -77,11 +92,38 @@
       "fiber_repairs_in_progress": {
         "name": "Fiber repairs in progress"
       },
+      "last_24h_average_power": {
+        "name": "Last 24 hours average power"
+      },
+      "last_24h_estimated_cost": {
+        "name": "Last 24 hours estimated cost"
+      },
+      "last_24h_kwh": {
+        "name": "Last 24 hours energy"
+      },
+      "last_24h_previous_year_kwh": {
+        "name": "Last 24 hours previous-year energy"
+      },
+      "last_24h_usage_difference": {
+        "name": "Last 24 hours usage difference"
+      },
+      "latest_cycle_day_average_power": {
+        "name": "Latest cycle day average power"
+      },
+      "latest_cycle_day_estimated_cost": {
+        "name": "Latest cycle day estimated cost"
+      },
+      "latest_cycle_day_kwh": {
+        "name": "Latest cycle day energy"
+      },
       "latest_usage_delta": {
         "name": "Latest observed usage delta"
       },
       "latest_usage_rate": {
         "name": "Latest observed usage rate"
+      },
+      "past_due": {
+        "name": "Past due"
       },
       "prepay_average_daily_charge": {
         "name": "PrePay average daily charge"
@@ -94,6 +136,24 @@
       },
       "previous_year_cycle_kwh": {
         "name": "Previous year cycle energy"
+      },
+      "rolling_12mo_average_monthly_kwh": {
+        "name": "Rolling 12 months average monthly energy"
+      },
+      "rolling_12mo_estimated_cost": {
+        "name": "Rolling 12 months estimated cost"
+      },
+      "rolling_12mo_kwh": {
+        "name": "Rolling 12 months energy"
+      },
+      "rolling_30d_average_daily_kwh": {
+        "name": "Rolling 30 days average daily energy"
+      },
+      "rolling_30d_estimated_cost": {
+        "name": "Rolling 30 days estimated cost"
+      },
+      "rolling_30d_kwh": {
+        "name": "Rolling 30 days energy"
       },
       "usage_percent_difference": {
         "name": "Usage difference"

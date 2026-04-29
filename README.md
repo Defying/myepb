@@ -14,13 +14,19 @@ For each linked EPB Energy account, the integration creates sensors for:
 
 - Current billing cycle kWh
 - Current billing cycle estimated cost
+- Current billing cycle average daily kWh and estimated cost
+- Latest billing-cycle day kWh, estimated cost, and average power
 - Previous-year matching cycle kWh
 - Usage percent difference
 - Latest observed usage rate in kW, inferred from changes in the current-cycle
   kWh total
 - Latest observed usage delta in kWh
-- Amount due
-- Days until due
+- Last 24 hours kWh, estimated cost, average power, previous-year kWh, and
+  usage percent difference
+- Rolling 30 days kWh, estimated cost, and average daily kWh
+- Rolling 12 months kWh, estimated cost, and average monthly kWh
+- Bill-cycle consumption, current bill charges, current bill total, past due,
+  amount due, and days until due
 - PrePay balance, average daily charge, and estimated days left when the account
   is enrolled in PrePay Power
 
@@ -36,11 +42,12 @@ The current-cycle kWh sensor uses `device_class: energy` and
 `state_class: total_increasing`, so it can be used as a utility-style energy
 sensor. EPB appears to reset this value at the billing-cycle boundary.
 
-The latest observed usage rate is derived locally from the current-cycle kWh
-sensor. It does not call another EPB endpoint: when the cycle total increases,
-the integration divides the kWh increase by the hours since the previous
-observed increase. The entity stays unavailable until at least one increase has
-been observed after Home Assistant starts.
+The comparison sensors use EPB's hourly, daily, and monthly comparison
+endpoints. The latest observed usage rate is derived locally from the
+current-cycle kWh sensor: when the cycle total increases, the integration
+divides the kWh increase by the hours since the previous observed increase.
+That inferred entity stays unavailable until at least one increase has been
+observed after Home Assistant starts.
 
 ## Install
 
@@ -114,11 +121,23 @@ python3 scripts/probe_myepb.py
 The probe prints linked power account numbers redacted to the last four
 characters plus the top-level keys returned by the usage endpoint.
 
+For deeper endpoint discovery, run:
+
+```bash
+set -a
+source .env.local
+set +a
+python3 scripts/probe_myepb_deep.py
+```
+
+The deep probe prints redacted payload shapes for account, billing,
+current-cycle usage, and comparison endpoints. It is intended for development
+only; review output before sharing it.
+
 ## Current Limits
 
-- I could verify endpoint shapes and error responses without account
-  credentials, but I could not verify live account payloads end-to-end.
-- Hourly/daily/monthly comparison endpoints are implemented in the API client
-  but not yet exposed as Home Assistant entities. The inferred latest usage
-  sensors use the existing current-cycle endpoint to avoid extra polling.
+- Live payload shapes have been verified against one residential account; other
+  EPB account classes may expose different fields.
+- The integration exposes the comparison endpoint totals, but not every
+  individual hourly/daily/monthly data point as separate entities.
 - EPB can change this private API without notice.
