@@ -1,0 +1,11 @@
+{
+  "domain": "myepb",
+  "name": "MyEPB",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://github.com/custom-components/myepb",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/custom-components/myepb/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

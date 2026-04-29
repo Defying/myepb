@@ -1,0 +1,103 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect MyEPB",
+        "description": "Enter MyEPB credentials for account usage data, or leave both fields blank to add only public EPB outage-map sensors.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate MyEPB",
+        "description": "Your MyEPB refresh token expired. Enter your password to continue.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to MyEPB.",
+      "invalid_auth": "Invalid MyEPB username or password.",
+      "missing_credentials": "Enter both username and password, or leave both fields blank for public outage-map sensors only."
+    },
+    "abort": {
+      "already_configured": "This MyEPB account is already configured.",
+      "reauth_successful": "Reauthentication was successful."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "amount_due": {
+        "name": "Amount due"
+      },
+      "current_cycle_estimated_cost": {
+        "name": "Current cycle estimated cost"
+      },
+      "current_cycle_kwh": {
+        "name": "Current cycle energy"
+      },
+      "days_until_due": {
+        "name": "Days until due"
+      },
+      "energy_customers_affected": {
+        "name": "Energy customers affected"
+      },
+      "energy_customers_in_repair": {
+        "name": "Energy customers in repair"
+      },
+      "energy_customers_restored_24h": {
+        "name": "Energy customers restored in 24 hours"
+      },
+      "energy_incidents_restored_24h": {
+        "name": "Energy incidents restored in 24 hours"
+      },
+      "energy_outage_incidents": {
+        "name": "Energy outage incidents"
+      },
+      "energy_repairs_in_progress": {
+        "name": "Energy repairs in progress"
+      },
+      "fiber_customers_affected": {
+        "name": "Fiber customers affected"
+      },
+      "fiber_customers_in_repair": {
+        "name": "Fiber customers in repair"
+      },
+      "fiber_customers_restored_24h": {
+        "name": "Fiber customers restored in 24 hours"
+      },
+      "fiber_incidents_restored_24h": {
+        "name": "Fiber incidents restored in 24 hours"
+      },
+      "fiber_outage_incidents": {
+        "name": "Fiber outage incidents"
+      },
+      "fiber_repairs_in_progress": {
+        "name": "Fiber repairs in progress"
+      },
+      "latest_usage_delta": {
+        "name": "Latest observed usage delta"
+      },
+      "latest_usage_rate": {
+        "name": "Latest observed usage rate"
+      },
+      "prepay_average_daily_charge": {
+        "name": "PrePay average daily charge"
+      },
+      "prepay_balance": {
+        "name": "PrePay balance"
+      },
+      "prepay_estimated_days_left": {
+        "name": "PrePay estimated days left"
+      },
+      "previous_year_cycle_kwh": {
+        "name": "Previous year cycle energy"
+      },
+      "usage_percent_difference": {
+        "name": "Usage difference"
+      }
+    }
+  }
+}
